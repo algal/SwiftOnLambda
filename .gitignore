@@ -1,0 +1,14 @@
+.DS_Store
+
+# build products for the deployment package
+/build
+
+# a Swift Package Manger directory, plus a LinuxLibraries
+/swiftcommand/LinuxLibraries/
+/swiftcommand/*.xcodeproj
+/swiftcommand/Packages
+/swiftcommand/.build
+
+# Terraform state
+/**/*.tfstate
+/**/*.tfstate.backup

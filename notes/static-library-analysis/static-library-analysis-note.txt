@@ -1,0 +1,9 @@
+I've found more libraries via the following method:
+
+run ldd swiftcommand in Linux to find all referenced libraries
+run swiftcommand, having coded it to import Foundation
+see errors about missing libraries
+add the missing libraries one by one until that error disappears.
+I first tried adding all missing libraries but when you do that it segfaults. I don't know why.
+
+I'm worried we're playing fast & loose with the linker here, since I presume it is not safe to assume that static libraries from ibmcom/kitura-swift are compatible with those from ubuntu:latest. Or am I wrong about that?
