@@ -1,3 +1,5 @@
+# Swift On Lambda
+
 ## How to build, provision, and run
 
 Prerequisites:
@@ -46,13 +48,13 @@ make provision
 
 ## FYI, what this Makefile does
 
-An Amazon Lambda function is defined by a _package_. The Makefile builds that package.
+An Amazon Lambda function is defined by AWS configuration and by a _deployment package_. The Makefile builds that package.
 
-A "package" must use one of the supported languages (Java, NodeJS, or Python). Our uses JS, and the JS file is contained in `shim/`.
+The package must use one of the supported languages, Java, NodeJS, or Python. We use JS and that JS file is contained in `shim/`.
 
 A package may also contain a native binary executable, and this is where we drop in our compiled Swift code.
 
-The only catch is that the binary must be compiled on an appropriate Linux distribution. The Makefile's `build_swift` target uses docker to do this. In case you are new to the exciting world of docker, here's a breakdown of key points in part of the build process:
+One catch is that the binary must be compiled on an appropriate Linux distribution. The Makefile's `build_swift` target uses docker to do this. In case you are new to the exciting world of docker, here's a breakdown of key points in part of the build process:
 
 First is roughly like this:
 
