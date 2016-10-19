@@ -1,5 +1,7 @@
 import Foundation
 
+import greeter
+
 // print("Hello, world, from Swift! Echoing stdin. CTRL-D to stop")
 
 /*
