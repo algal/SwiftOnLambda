@@ -1,7 +1,5 @@
 import Foundation
 
-import greeter
-
 // print("Hello, world, from Swift! Echoing stdin. CTRL-D to stop")
 
 /*
@@ -14,5 +12,14 @@ func echo(string:String) -> String {
     return string
 }
 
+let g = Greeter()
+func greetResponse(string:String) -> String {
+    return g.service(string:string)
+}
+
+//echo
+//readTransformPrint(transform:echo)
+
+// ALEXA
 // read stdin to a String, transform it, return the result
-readTransformPrint(transform:echo)
+readTransformPrint(transform:greetResponse)

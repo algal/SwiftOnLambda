@@ -96,3 +96,11 @@ This runs a container based on the plain `ubuntu` image, mapping to the host src
 
 It's worth emphasizing that while some of these docker command build a container from the same image, none of these commands operate on the same container, since the container is removed after the command exits. The only reason we are accumulating a directory of the outputs we need is because every container's /src directory is mapped to our host's src/ directory, and that directory's contents persist across the different containers' lifetimes like the host itself.
 
+
+## SwiftOnAlexa
+
+Is a freestanding, independent Swift project.
+
+Rather than host it on a separate repo, it is a subdirectory here, and is 
+referenced via relative file paths rather than an absolute http url.
+
