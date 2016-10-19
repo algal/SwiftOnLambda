@@ -14,7 +14,7 @@ Prerequisites:
 
 - install AWS credentials in ~/.aws/credentials or in the environment, for terraform to use
 
-- modify `terraform.tfvars` so that `s3_bucket` is a unique name, such as "com.yourdomainnamehere.swiftlambda"
+- modify `terraform.tfvars` so that `s3_bucket` is a unique name you own, such as "com.yourdomainnamehere.swiftlambda"
 
 - build with `make build`
 

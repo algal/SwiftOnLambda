@@ -1,31 +1,16 @@
 import Foundation
 
-print("Hello, world, from Swift!")
+// print("Hello, world, from Swift! Echoing stdin. CTRL-D to stop")
 
-#if os(Linux)
-  import Glibc
-#else
-  import Darwin.C
-#endif
+/*
+ This function just cleanly echoes its input. Here is where you would 
+ put in your own logic, which did String->JSONRequest->JSONResponse->String
+ */
 
-func lineGenerator(file:UnsafeMutablePointer<FILE>) -> AnyIterator<String>
-{
-  return AnyIterator { () -> String? in
-    var line:UnsafeMutablePointer<CChar>? = nil
-    var linecap:Int = 0
-    defer { free(line) }
-    let ret = getline(&line, &linecap, file)
-    
-    if ret > 0 {
-      guard let line = line else { return nil }
-      return String(validatingUTF8: line)
-    }
-    else {
-      return nil
-    }
-  }
+fileprivate 
+func echo(string:String) -> String {
+    return string
 }
 
-for line in lineGenerator(file:stdin) {
-  print(line, separator: "", terminator: "")
-}
+// read stdin to a String, transform it, return the result
+readTransformPrint(transform:echo)
