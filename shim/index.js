@@ -58,10 +58,8 @@ exports.handler = (event, context, callback) => {
         callback(error,null);
     }
     else {
-        var response = {
-            output: stdout,
-            input: event // echo back the input
-        };
+        // executable's raw stdout is the Lambda output
+        var response = stdout;
         callback(null,response);
     }
 };
