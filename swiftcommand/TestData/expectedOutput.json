@@ -1,0 +1,12 @@
+// known-good expected output as of 2016-10-20T1215
+{
+  "version": "1.0",
+  "response": {
+    "outputSpeech": {
+      "type": "PlainText",
+      "text": "Hello from Swift"
+    },
+    "shouldEndSession": true
+  },
+  "sessionAttributes": {}
+}

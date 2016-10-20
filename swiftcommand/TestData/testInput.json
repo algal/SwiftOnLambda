@@ -1,6 +1,7 @@
+// known-good test input as 2016-10-20T1215
 {
   "session": {
-    "sessionId": "SessionId.bf60bf94-f669-4797-bc9a-7b10fec4c31f",
+    "sessionId": "SessionId.87f621dd-3232-428c-8d35-f27dd3500985",
     "application": {
       "applicationId": "amzn1.ask.skill.221dba25-e4b4-40bc-952c-5b25ec81bd4d"
     },
@@ -12,9 +13,9 @@
   },
   "request": {
     "type": "IntentRequest",
-    "requestId": "EdwRequestId.6173f280-ce95-46bd-9ab8-47fa4d0c9ed6",
+    "requestId": "EdwRequestId.b3f41621-13f6-4714-826b-0d64db9c9d26",
     "locale": "en-US",
-    "timestamp": "2016-10-20T05:29:28Z",
+    "timestamp": "2016-10-20T19:15:06Z",
     "intent": {
       "name": "HelloWorldIntent",
       "slots": {}
