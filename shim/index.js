@@ -59,7 +59,7 @@ exports.handler = (event, context, callback) => {
     }
     else {
         // executable's raw stdout is the Lambda output
-        var response = stdout;
+        var response = JSON.parse(stdout);
         callback(null,response);
     }
 };

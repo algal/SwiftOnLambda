@@ -1,8 +1,10 @@
 import PackageDescription
 
 let package = Package(
-        name: "swiftcommand",
-        exclude: ["LinuxLibraries"]
+  name: "swiftcommand",
+  dependencies:[
+  ],
+  exclude: ["LinuxLibraries","TestData"]
 )
 
 

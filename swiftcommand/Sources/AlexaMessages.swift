@@ -136,25 +136,94 @@ struct LaunchRequest
 {
   var type:String
   var requestId:String
-  var timestamp:String
-  var locale:String
+  var timestamp:String?
+  var locale:String?
 }
 
 extension LaunchRequest {
   init?(JSON JSONValue:JSONDictionary) {
-    guard let theType = JSONValue["type"] as? String,
+    guard
+      let theType = JSONValue["type"] as? String,
       let theRequestId = JSONValue["requestId"] as? String,
-      let theTimestamp = JSONValue["timestamp"] as? String,
-      let theLocale = JSONValue["locale"] as? String,
       theType == "LaunchRequest"
       else { return nil }
+
+    if let theTimestamp = JSONValue["timestamp"] as? String {
+      timestamp = theTimestamp
+    }
+    else {
+      timestamp = nil
+    }
+    
+    if let theLocale = JSONValue["locale"] as? String {
+      locale = theLocale
+    } else {
+      locale = nil
+    }
     
     type = theType
     requestId = theRequestId
-    timestamp = theTimestamp
-    locale = theLocale
   }
 }
+
+/*
+{
+  "type": "SessionEndedRequest",
+  "requestId": "string",
+  "timestamp": "string",
+  "reason": "string",
+  "locale": "string",
+  "error": {
+    "type": "string",
+    "message": "string"
+  }
+}
+*/
+
+struct SessionEndRequest
+{
+  var type:String
+  var requestId:String
+  var reason:String
+  var timestamp:String?
+  var locale:String?
+  var error:JSONDictionary?
+}
+
+extension SessionEndRequest {
+  init?(JSON JSONValue:JSONDictionary) {
+    guard
+      let theType = JSONValue["type"] as? String,
+      let theRequestId = JSONValue["requestId"] as? String,
+      let theReason = JSONValue["reason"] as? String,
+      theType == "SessionEndRequest"
+      else { return nil }
+
+    if let theTimestamp = JSONValue["timestamp"] as? String {
+      timestamp = theTimestamp
+    }
+    else {
+      timestamp = nil
+    }
+    
+    if let theLocale = JSONValue["locale"] as? String {
+      locale = theLocale
+    } else {
+      locale = nil
+    }
+
+    if let theError = JSONValue["error"] as? JSONDictionary {
+      error = theError
+    } else {
+      error = nil
+    }
+    
+    type = theType
+    requestId = theRequestId
+    reason = theReason
+  }
+}
+
 
 // TODO: implement AlexaIntent
 typealias AlexaIntent = JSONDictionary
@@ -162,8 +231,8 @@ struct IntentRequest
 {
   var type:String
   var requestId:String
-  var timestamp:String
-  var locale:String
+  var timestamp:String?
+  var locale:String?
   var intent:AlexaIntent
 }
 
@@ -171,36 +240,55 @@ extension IntentRequest {
   init?(JSON JSONValue:JSONDictionary) {
     guard let theType = JSONValue["type"] as? String,
       let theRequestId = JSONValue["requestId"] as? String,
-      let theTimestamp = JSONValue["timestamp"] as? String,
-      let theLocale = JSONValue["locale"] as? String,
       let theIntent = JSONValue["intent"] as? JSONDictionary,
       theType == "IntentRequest"
       else { return nil }
-    
-    type = theType
-    requestId = theRequestId
-    timestamp = theTimestamp
-    locale = theLocale
-    intent = theIntent
+
+
+      if let theTimestamp = JSONValue["timestamp"] as? String {
+          timestamp = theTimestamp
+      } else {
+          timestamp = nil
+      }
+      if let theLocale = JSONValue["locale"] as? String {
+          locale = theLocale
+      } else {
+          locale = nil
+      }
+      
+      type = theType
+      requestId = theRequestId
+      intent = theIntent
   }
 }
 
 
 /*
- {
- "new": true,
- "sessionId": "string",
- "application": {
- "applicationId": "string"
- },
- "attributes": {
- "string": {}
- },
- "user": {
- "userId": "string",
- "accessToken": "string"
- }
- }
+
+// actual sample request:
+
+// example 1:
+{
+  "session": {
+    "new": true,
+    "sessionId": "session1234",
+    "attributes": {},
+    "user": {
+      "userId": null
+    },
+    "application": {
+      "applicationId": "amzn1.ask.skill.221dba25-e4b4-40bc-952c-5b25ec81bd4d"
+    }
+  },
+  "version": "1.0",
+  "request": {
+    "type": "LaunchRequest",
+    "requestId": "request5678"
+  }
+}
+
+// example 2:
+
  */
 struct AlexaSession {
   var new:Bool
@@ -464,11 +552,41 @@ struct AlexaResponseEnvelope {
 
 extension AlexaResponseEnvelope {
   var asJSON:JSONDictionary {
+    let emptyDictionary:[String:String] = [:]
     var d:JSONDictionary = [:]
     d["version"] = self.version
-    d["sessionAttributes"] = self.sessionAttributes
+    d["sessionAttributes"] = self.sessionAttributes ?? emptyDictionary
     d["response"]  = self.response.asJSON
     return d
+  }
+  
+  /// horrible workaround since stanard encoders choke on Bool
+  var asJSONString:String
+  {
+    var kvStrings:[String] = []
+
+    kvStrings.append( "\"version\" : \"\(self.version)\"" )
+
+    if
+      let speechJSON = self.sessionAttributes,
+      let speechData = try? JSONSerialization.data(withJSONObject: speechJSON, options: []),
+      let speechString = String(data:speechData,encoding:.utf8) {
+      
+      let key = "sessionAttributes"
+      kvStrings.append( " \"\(key)\" : \(speechString) " )
+    }
+    else {
+      let key = "sessionAttributes"
+      kvStrings.append( "\"\(key)\" : {}" )
+    }
+    
+    let responseKey = "response"
+    let responseValueString = self.response.asJSONString
+    kvStrings.append( "\"\(responseKey)\" : \(responseValueString)" )
+    
+    let s = "{\n" + kvStrings.joined(separator: ",\n") + "\n}"
+    
+    return s
   }
 }
 
@@ -507,6 +625,64 @@ extension AlexaResponse
     
     return d
   }
+
+  /// horrible workaround since stanard encoders choke on Bool
+   var asJSONString:String
+   {
+    var kvStrings:[String] = []
+
+    if
+      let speechJSON = self.outputSpeech?.asJSON,
+      let speechData = try? JSONSerialization.data(withJSONObject: speechJSON, options: []),
+      let speechString = String(data:speechData,encoding:.utf8) {
+      
+      let key = "outputSpeech"
+      
+      kvStrings.append( "\"\(key)\" : \(speechString)" )
+    }
+      
+    if
+      let speechJSON = self.card?.asJSON,
+      let speechData = try? JSONSerialization.data(withJSONObject: speechJSON, options: []),
+      let speechString = String(data:speechData,encoding:.utf8) {
+      
+      let key = "card"
+      
+      kvStrings.append( "\"\(key)\" : \(speechString)" )
+    }
+
+    if
+      let speechJSON = self.reprompt?.asJSON,
+      let speechData = try? JSONSerialization.data(withJSONObject: speechJSON, options: []),
+      let speechString = String(data:speechData,encoding:.utf8) {
+      
+      let key = "reprompt"
+      kvStrings.append( "\"\(key)\" = \(speechString)" )
+    }
+
+    if
+      let directivesJSON = self.directives?.map({
+        (directive:AlexaDirective) -> JSONDictionary in
+        return directive.asJSON
+      }),
+      let directivesData = try? JSONSerialization.data(withJSONObject: directivesJSON, options: []),
+      let directivesString = String(data:directivesData,encoding:.utf8)
+    {
+      let key = "directives"
+      kvStrings.append( "\"\(key)\" : \(directivesString)" )
+    }
+    
+
+    if let shouldEndSession = self.shouldEndSession {
+        let v:String = shouldEndSession ? "true" : "false"
+        let kvShouldEndSession = "\"shouldEndSession\" : \(v)"
+      kvStrings.append( kvShouldEndSession )
+    }
+    
+    let s = "{\n" + kvStrings.joined(separator: ",\n") + "\n}"
+
+    return s
+   }
 }
 
 
