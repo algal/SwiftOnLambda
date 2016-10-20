@@ -18,7 +18,7 @@ func greetResponse(string:String) -> String {
 }
 
 //echo
-readTransformPrint(transform:greetResponse)
+readTransformPrint(transform:echo)
 
 // ALEXA
 // read stdin to a String, transform it, return the result
