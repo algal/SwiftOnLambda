@@ -9,7 +9,7 @@ s3_bucket = "com.alexisgallagher.swiftlambda2"
 # MAY be adjusted independently
 #
 
-# user!  update the below to your region of choice
+# (you must use us-east-1 if you're developing an Alexa Custom Skill.)
 region = "us-east-1"
 
 environment = "Dev"

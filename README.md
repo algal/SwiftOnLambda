@@ -1,18 +1,32 @@
 # Swift On Lambda
 
-## How to build, provision, and run
+## What's here
+
+This repo contains an example of two things: using Swift to define an Amazon Lambda function, and in particular using it to define an Amazon Lambda function which implements a simple "Hello world" Alexa Custom Skill. 
+
+Amazon Lambda only officially supports NodeJS, Java, and Python but it also supports including arbitrary Linux executables. So the trick to using Swift on Lambda is just to compile your Swift function to a Linux executable and then build a Lambda function which runs a shim in a supported language that transparently wraps that executable. (There's actually a mature version of this for the Go language, the [Sparta](http://gosparta.io) project.) To do all this, this repo uses docker to help with building the Linux executable and grabbing needed libraries, and it uses terraform to help with deploying to Lambda.
+
+Right now, by default, the repo will deploy a simple Lambda function that just performs an echo command, returning as output whatever was the input. If you want to define your own Lambda function, have a look at `main.swift` and just change the argument from `echo` to a function of your choice.
+
+This repo also contains code to define a simple "Hello from Swift" Alexa Custom Skill. (Why use Lambda for this? Because although you can host an Alexa Custom Skill on an ordinary web server, the HTTPS authentication requirements are quite messy, and you get those for free with Lambda.) If you want to experiment with this, then go to `main.swift` and use  `greetResponse` instead of `echo`. You will also need to manually configure the skill's intent schema and sample utterances on the Alexa developer website, since Amazon does not provide an API for automated deployment yet. You can find a sample intent schema and sample utterances in the `Resources/` directory.
+
+The best place to look for a clear explanation of developing for Alexa, by the way, is the Big Nerd Ranch videos and sample code that Amazon commissioned.
+
+## How to build, provision, and run a Lambda function
 
 Prerequisites:
 
+- if you want, update `main.swift` so it calls your own function which takes a (JSON) `String` to a (JSON) `String`. (By default, it will just echo.)
+
 - install docker and start the docker daemon. 
 
-  This is used to compile for Linux and grab Linux libraries)
+  This is used to compile for Linux and grab Linux libraries
 
 - install terraform
 
   This is used to drive AWS.
 
-- install AWS credentials in ~/.aws/credentials or in the environment, for terraform to use
+- install AWS credentials in ~/.aws/credentials or in environmental variables, for terraform to use
 
 - modify `terraform.tfvars` so that `s3_bucket` is a unique name you own, such as "com.yourdomainnamehere.swiftlambda"
 
@@ -20,8 +34,7 @@ Prerequisites:
 
 - provision with `make provision`
 
-
-## Provisioning
+### Provisioning
 
 Swift Lambda uses terraform to provision your lambda function. You can install terrafrom either using brew or get the official package from here: [https://www.terraform.io/downloads.html](https://www.terraform.io/downloads.html).
 
@@ -31,22 +44,20 @@ The terraform plan configures the following:
 
 - an S3 bucket, holding the deployment package defining the lambda function's contents (this is just a zip file)
 
-- an IAM role, defining permissions your Lamba function has while executing
+- an IAM role, defining permissions which your Lamba function has while executing
 
-- an API gateway configuration, so AWS presents an HTTPS interface to the function
+- an API gateway configuration, so AWS presents an HTTPS interface to the function, in case you want that (tho it is not needed for Alexa)
 
 The  `/terraform/terraform.tf` contains the default configuerations such as the lambda function name and the S3 bucket name.
 
 To provision your lambda, ensure you have your AWS credentials either in the ~/.aws/credentials file or you have the environment variables set.
-
 
 Run:
 ```
 make provision
 ```
 
-
-## FYI, what this Makefile does
+#### what this Makefile does
 
 An Amazon Lambda function is defined by AWS configuration and by a _deployment package_. The Makefile builds that package.
 
@@ -56,7 +67,7 @@ A package may also contain a native binary executable, and this is where we drop
 
 One catch is that the binary must be compiled on an appropriate Linux distribution. The Makefile's `build_swift` target uses docker to do this. In case you are new to the exciting world of docker, here's a breakdown of key points in part of the build process:
 
-First is roughly like this:
+The first command is roughly like this:
 
 ```sh
 $ docker run                               # create a container and run it
@@ -95,12 +106,3 @@ $ docker run --interactive                 # let allow stdin/out into the contai
 This runs a container based on the plain `ubuntu` image, mapping to the host src/ directory with the extracted static libraries, and then runs a single shell command in the container which sets an environmental variable pointing the linker to those libraries and executes the executable `src`.
 
 It's worth emphasizing that while some of these docker command build a container from the same image, none of these commands operate on the same container, since the container is removed after the command exits. The only reason we are accumulating a directory of the outputs we need is because every container's /src directory is mapped to our host's src/ directory, and that directory's contents persist across the different containers' lifetimes like the host itself.
-
-
-## SwiftOnAlexa
-
-Is a freestanding, independent Swift project.
-
-Rather than host it on a separate repo, it is a subdirectory here, and is 
-referenced via relative file paths rather than an absolute http url.
-

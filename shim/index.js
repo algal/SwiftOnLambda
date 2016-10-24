@@ -7,18 +7,15 @@ const spawnSync = require('child_process').spawnSync;
 /**  
      Defines a handler function called "index.handler" to Lambda.
 
-     This function takes an `event` object as input, and invokes the
-     `swiftcommand` executable.
-     
-     If the executable completes without error, the handler
-     callback-returns an object of the form
+     This function just transparently wraps the `swiftcommand` executable.
 
-     { 
-     input: event
-     output: stdout
-     }
+     It takes a JSON object `event` as input, serializes it to a
+     string, invokes the `swiftcommand` executable, passing the string
+     into stdin and reads the stdout, deserializes the stdout into
+     JSON, and then calls back with the reponse JSON object.
 
-     If the executable errors, the handler returns an error (?).
+     If the executable errors, the handler calls back with the error
+     object intead.
 
      In all cases, the executable's stdout is logged to the console as
      a log message, and its stderr is logged as error messages.

@@ -4,7 +4,7 @@ let package = Package(
   name: "swiftcommand",
   dependencies:[
   ],
-  exclude: ["LinuxLibraries","TestData"]
+  exclude: ["LinuxLibraries","TestData","Resources"]
 )
 
 
