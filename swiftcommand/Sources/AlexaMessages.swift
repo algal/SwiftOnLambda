@@ -560,7 +560,7 @@ extension AlexaResponseEnvelope {
     return d
   }
   
-  /// horrible workaround since stanard encoders choke on Bool
+  /// hack to workaround JSONSerialization bug with Bools: https://bugs.swift.org/browse/SR-3013
   var asJSONString:String
   {
     var kvStrings:[String] = []
@@ -626,7 +626,7 @@ extension AlexaResponse
     return d
   }
 
-  /// horrible workaround since stanard encoders choke on Bool
+  /// hack to workaround JSONSerialization bug with Bools: https://bugs.swift.org/browse/SR-3013
    var asJSONString:String
    {
     var kvStrings:[String] = []
