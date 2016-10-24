@@ -48,7 +48,7 @@ The terraform plan configures the following:
 
 - an API gateway configuration, so AWS presents an HTTPS interface to the function, in case you want that (tho it is not needed for Alexa)
 
-The  `/terraform/terraform.tf` contains the default configuerations such as the lambda function name and the S3 bucket name.
+The file `/terraform/terraform.tfvars` contains the default configuerations such as the lambda function name and the S3 bucket name.
 
 To provision your lambda, ensure you have your AWS credentials either in the ~/.aws/credentials file or you have the environment variables set.
 
@@ -59,7 +59,7 @@ make provision
 
 #### what this Makefile does
 
-An Amazon Lambda function is defined by AWS configuration and by a _deployment package_. The Makefile builds that package.
+An Amazon Lambda function is defined by AWS configurations and by a _deployment package_. The Makefile builds that package.
 
 The package must use one of the supported languages, Java, NodeJS, or Python. We use JS and that JS file is contained in `shim/`.
 
@@ -72,7 +72,7 @@ The first command is roughly like this:
 ```sh
 $ docker run                               # create a container and run it
          --rm                              # rm the container when it exits
-         --volume "$(shell pwd)/src:/src"  # bind the local directory src/ to in-the-container  /src 
+         --volume "$(shell pwd)/src:/src"  # bind the local host directory src/ to in-the-container  /src 
          --workdir /src                    # set /src as the working directory in the container
          ibmcom/kitura-ubuntu              # use IBM's Kitura docker image to define the container
          swift build -v                    # in the container, run only the command "swift build -v"
@@ -89,7 +89,7 @@ $ ...
 
 ```
 
-These essentially copy files from inside the IBM Kitura Swift docker container into the container's /src directory, which is bound to the host's file system. In other words, we are essentially just extracting useful Linux static libraries from inside the container.
+These essentially copy files from inside the IBM Kitura Swift docker container into the container's /src directory, which is bound to the host's file system. In other words, we are essentially just extracting useful Linux static libraries from inside the container. (Thanks, IBM!) 
 
 Finally, the run command is a bit different:
 
@@ -103,6 +103,8 @@ $ docker run --interactive                 # let allow stdin/out into the contai
              /bin/bash -c 'LD_LIBRARY_PATH=/src/src/libs /src/src/.build/debug/src' # set env var and run executable src
 ```
 
-This runs a container based on the plain `ubuntu` image, mapping to the host src/ directory with the extracted static libraries, and then runs a single shell command in the container which sets an environmental variable pointing the linker to those libraries and executes the executable `src`.
+This runs a container based on the plain `ubuntu` image, mapping to the host src/ directory with the extracted static libraries, and then runs a single shell command in the container which sets an environmental variable pointing the linker to those libraries and executes the executable `src`. Why are we running this based on a plain ubuntu image? Because we want to verify that our executable and libraries will run fine on Amazon's Linux, which is closer to plain ubuntu than to IBM's Kitura container. Even better would be to use here a docker image based on Amazon's Linux AMIs.
 
 It's worth emphasizing that while some of these docker command build a container from the same image, none of these commands operate on the same container, since the container is removed after the command exits. The only reason we are accumulating a directory of the outputs we need is because every container's /src directory is mapped to our host's src/ directory, and that directory's contents persist across the different containers' lifetimes like the host itself.
+
+Does it seem like docker is a handy tool to support cross-platform Swift development? I [sure think so](https://github.com/algal/swiftecho).
