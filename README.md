@@ -4,13 +4,13 @@
 
 This repo contains an example of two things: using Swift to define an Amazon Lambda function, and in particular using it to define an Amazon Lambda function which implements a simple "Hello world" Alexa Custom Skill. 
 
-Amazon Lambda only officially supports NodeJS, Java, and Python but it also supports including arbitrary Linux executables. So the trick to using Swift on Lambda is just to compile your Swift function to a Linux executable and then build a Lambda function which runs a shim in a supported language that transparently wraps that executable. (There's actually a mature version of this for the Go language, the [Sparta](http://gosparta.io) project.) To do all this, this repo uses docker to help with building the Linux executable and grabbing needed libraries, and it uses terraform to help with deploying to Lambda.
+Amazon Lambda only officially supports NodeJS, Java, and Python but it also supports including arbitrary Linux executables. So the trick to using Swift on Lambda is just to compile your Swift function to a Linux executable and then build a Lambda function which runs a shim in a supported language that transparently wraps that executable. (There's actually a mature version of this for the Go language, the [Sparta](http://gosparta.io) project.) To do all this, this repo uses [Docker](https://www.docker.com) to help with building the Linux executable and grabbing needed libraries, and it uses [terraform](https://www.docker.com) to help with deploying to Lambda.
 
 Right now, by default, the repo will deploy a simple Lambda function that just performs an echo command, returning as output whatever was the input. If you want to define your own Lambda function, have a look at `main.swift` and just change the argument from `echo` to a function of your choice.
 
 This repo also contains code to define a simple "Hello from Swift" Alexa Custom Skill. (Why use Lambda for this? Because although you can host an Alexa Custom Skill on an ordinary web server, the HTTPS authentication requirements are quite messy, and you get those for free with Lambda.) If you want to experiment with this, then go to `main.swift` and use  `greetResponse` instead of `echo`. You will also need to manually configure the skill's intent schema and sample utterances on the Alexa developer website, since Amazon does not provide an API for automated deployment yet. You can find a sample intent schema and sample utterances in the `Resources/` directory.
 
-The best place to look for a clear explanation of developing for Alexa, by the way, is the Big Nerd Ranch videos and sample code that Amazon commissioned.
+The best place to look for a clear explanation of developing for Alexa, by the way, is the Big Nerd Ranch [videos](https://www.youtube.com/watch?v=QxgdPI1B7rg) and [sample code](https://github.com/bignerdranch/developing-alexa-skills-solutions) that Amazon commissioned.
 
 ## How to build, provision, and run a Lambda function
 
@@ -33,6 +33,8 @@ Prerequisites:
 - build with `make build`
 
 - provision with `make provision`
+
+- to run the function, use Amazon's web GUI to go find the function and test it.
 
 ### Provisioning
 
