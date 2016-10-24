@@ -61,11 +61,9 @@ make provision
 
 #### what this Makefile does
 
-An Amazon Lambda function is defined by AWS configurations and by a _deployment package_. The Makefile builds that package.
+An Amazon Lambda function is defined by AWS configurations and by a _deployment package_. The Makefile builds that package. 
 
-The package must use one of the supported languages, Java, NodeJS, or Python. We use JS and that JS file is contained in `shim/`.
-
-A package may also contain a native binary executable, and this is where we drop in our compiled Swift code.
+The package must use one of the supported languages, Java, NodeJS, or Python. We use JS and that JS file is contained in `shim/`. A package may also contain a native binary executable, and this is where we drop in our compiled Swift code.
 
 One catch is that the binary must be compiled on an appropriate Linux distribution. The Makefile's `build_swift` target uses docker to do this. In case you are new to the exciting world of docker, here's a breakdown of key points in part of the build process:
 
@@ -107,6 +105,6 @@ $ docker run --interactive                 # let allow stdin/out into the contai
 
 This runs a container based on the plain `ubuntu` image, mapping to the host src/ directory with the extracted static libraries, and then runs a single shell command in the container which sets an environmental variable pointing the linker to those libraries and executes the executable `src`. Why are we running this based on a plain ubuntu image? Because we want to verify that our executable and libraries will run fine on Amazon's Linux, which is closer to plain ubuntu than to IBM's Kitura container. Even better would be to use here a docker image based on Amazon's Linux AMIs.
 
-It's worth emphasizing that while some of these docker command build a container from the same image, none of these commands operate on the same container, since the container is removed after the command exits. The only reason we are accumulating a directory of the outputs we need is because every container's /src directory is mapped to our host's src/ directory, and that directory's contents persist across the different containers' lifetimes like the host itself.
+It's worth emphasizing that while some of these docker command build a container from the same image, none of these commands operate on the same container since the container is removed each time a command exits. Despite this, we are still accumulating a directory of all the outputs because every container's /src directory is mapped to our host's src/ directory, and that directory's contents persist across the different containers' lifetimes like the host itself.
 
 Does it seem like docker is a handy tool to support cross-platform Swift development? I [sure think so](https://github.com/algal/swiftecho).
