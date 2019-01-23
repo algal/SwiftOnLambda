@@ -2,7 +2,7 @@
 
 ## What's here
 
-This repo contains an example of two things: using Swift to define an Amazon Lambda function, and in particular using it to define an Amazon Lambda function which implements a simple "Hello world" Alexa Custom Skill. 
+This repo contains an example of two things: using Swift to define an Amazon Lambda function, and in particular using it to define an Amazon Lambda function which implements a simple "Hello world" Alexa Custom Skill. (This was work on the way to building an Swift chatbot, as [described in ths Swift Summit talk](https://www.skilled.io/u/swiftsummit/talking-to-swift).)
 
 Amazon Lambda only officially supports NodeJS, Java, and Python but it also supports including arbitrary Linux executables. So the trick to using Swift on Lambda is just to compile your Swift function to a Linux executable and then build a Lambda function which runs a shim in a supported language that transparently wraps that executable. (There's actually a mature version of this for the Go language, the [Sparta](http://gosparta.io) project.) To do all this, this repo uses [Docker](https://www.docker.com) to help with building the Linux executable and grabbing needed libraries, and it uses [terraform](https://www.docker.com) to help with deploying to Lambda.
 
