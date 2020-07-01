@@ -1,5 +1,9 @@
 # Swift On Lambda
 
+## Update in June 2020
+
+This repo is now mostsly irrelevant. Four years later, Apple now supports this directly: https://developer.apple.com/videos/play/wwdc2020/10644/
+
 ## What's here
 
 This repo contains an example of two things: using Swift to define an Amazon Lambda function, and in particular using it to define an Amazon Lambda function which implements a simple "Hello world" Alexa Custom Skill. (This was work on the way to building an Swift chatbot, as [described in ths Swift Summit talk](https://www.skilled.io/u/swiftsummit/talking-to-swift).)
